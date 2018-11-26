@@ -18,14 +18,23 @@ class Engine(object):
         pass
 
     def play(self):
+        # set the scene to the opening scene, defined in the map object
         current_scene = self.scene_map.opening_scene()
+        # define last scene. Can this be integrated into the map object instead of hard-coded?
+        # maybe by editing the get method to return a key to show the end of the list
         last_scene = self.scene_map.next_scene('finished')
 
         while current_scene != last_scene:
+            print(">>> top of while: current_scene=", current_scene)
+            # play the scene, set next_scene_name to what the scene returns
             next_scene_name = current_scene.enter()
+            print("<<< next_scene_name=", next_scene_name)
+            # take the next_scene_name key and load the scene class value in the
+            # map.scene dictionary
             current_scene = self.scene_map.next_scene(next_scene_name)
+            print(">>> current_scene=", current_scene)
 
-        # be sure to print out the last scene
+        # be sure to print out the last scene object
         current_scene.enter()
         pass
 
@@ -34,6 +43,7 @@ class Death(Scene):
 
     def enter(self):
         print(f"You have died due to dysentery. Congrats!")
+        # exit the program by calling sys.exit, returning exit code '1'
         exit(1)
 
 
@@ -112,20 +122,20 @@ class LaserWeaponArmory(Scene):
         code is 3 digits.
         """))
 
-        code = f"{randint(1, 9)}{randint(1, 9)}{randint(1, 9)}"
-        code_int = [int(x) for x in code.split()]
+        # code = f"{randint(1, 9)},{randint(1, 9)},{randint(1, 9)}"
+        # code_int = [int(x) for x in code.split()]
+        # guess = input("[keypad]> ")
+        # guesses = 0
+
+        # while guess != code and guesses < 10:
+        #     guess_int = [int(x) for x in guess.split()]
+
+        #     for digit in code:
+        #         if guess_int[digit] != code_int[digit]:
+        #             print("B" + "Z"*code_int[digit] + "D!")
+        #     print("BZZD!")
+        #     guesses += 1
         guess = input("[keypad]> ")
-        guesses = 0
-
-        while guess != code and guesses < 10:
-            guess_int = [int(x) for x in guess.split()]
-
-            for digit in code:
-                if guess_int[digit] != code_int[digit]:
-                    print("B" + "Z"*code_int[digit] + "D!")
-            print("BZZD!")
-            guesses += 1
-            guess = input("[keypad]> ")
 
         if guess == code:
             print(dedent("""
@@ -247,13 +257,16 @@ class Map(object):
         self.start_scene = start_scene
 
     def next_scene(self, scene_name):
+        # input scene name [str] (key), return scene object [object] (value)
         val = Map.scenes.get(scene_name)
         return val
 
     def opening_scene(self):
         return self.next_scene(self.start_scene)
 
-
+# create an instance of the map class with starting scene 'central_corridor'
 a_map = Map('central_corridor')
+# create an instance of the Engine class with a_map as the scene_map object
 a_game = Engine(a_map)
+# call play method within the a_game engine class
 a_game.play()
